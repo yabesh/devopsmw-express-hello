@@ -1,0 +1,126 @@
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMIID: "ami-0a313d6098716f372"
+    us-east-2:
+      AMIID: "ami-0c55b159cbfafe1f0"
+    us-west-1:
+      AMIID: "ami-06397100adf427136"
+    us-west-2:
+      AMIID: "ami-005bdb005fb00e791"
+Resources:
+  DemoServersSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties: 
+      GroupName: DevopsDemo
+      GroupDescription: Security group created for the Devops Midwest conference. Allows SSH open to the world and port 3000 for accessing the Node.js app
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+  ProdServer:
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      #IamInstanceProfile: String
+      ImageId:
+        Fn::FindInMap: [ "RegionMap", Ref: "AWS::Region", "AMIID" ]
+      InstanceType: t3.micro
+      SecurityGroupIds: 
+        - Ref: "DemoServersSecurityGroup"
+      Tags: 
+        - Key: Name
+          Value: DevOpsMWDemo-ProdServer
+        - Key: AppName
+          Value: DevopsDemo
+        - Key: Environment
+          Value: Production
+      UserData:
+        Fn::Base64: 
+          "#!/bin/bash -x\n
+
+          # install node & npm\n
+          apt-get update\n
+          apt install -y nodejs npm\n
+          npm install -g forever\n\n
+
+          # install codedeploy agent\n
+          apt-get install -y ruby wget\n
+          cd /home/ubuntu\n
+          wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n
+          chmod +x ./install\n
+          ./install auto\n\n
+
+          # install initial running code\n
+          mkdir -p /var/www/nodejs\n
+          cd /var/www/nodejs\n
+          git clone --depth 1 https://github.com/sketchdev/devopsmw-express-hello.git\n
+          cd devopsmw-express-hello\n
+          npm install\n
+          forever start app.js"
+
+      #######################
+      ##  OPTIONAL PARAMS
+      #######################
+      #
+      #KeyName: my-key
+      #
+      # If you want to be able to SSH onto the server, you'll need to specify your own key.
+      # This is outside the scope of this demo. But if you're interested, uncomment the above "KeyName" param, and please refer to:
+      #  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-keyname
+      #  * https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html
+
+  QAServer:
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      #IamInstanceProfile: String
+      ImageId:
+        Fn::FindInMap: [ "RegionMap", Ref: "AWS::Region", "AMIID" ]
+      InstanceType: t3.micro
+      SecurityGroupIds: 
+        - Ref: "DemoServersSecurityGroup"
+      Tags: 
+        - Key: Name
+          Value: DevOpsMWDemo-QAServer
+        - Key: AppName
+          Value: DevopsDemo
+        - Key: Environment
+          Value: QA
+      UserData:
+        Fn::Base64: 
+          "#!/bin/bash -x\n
+
+          # install node & npm\n
+          apt-get update\n
+          apt install -y nodejs npm\n
+          npm install -g forever\n\n
+
+          # install codedeploy agent\n
+          apt-get install -y ruby wget\n
+          cd /home/ubuntu\n
+          wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n
+          chmod +x ./install\n
+          ./install auto\n\n
+
+          # install initial running code\n
+          mkdir -p /var/www/nodejs\n
+          cd /var/www/nodejs\n
+          git clone --depth 1 https://github.com/sketchdev/devopsmw-express-hello.git\n
+          cd devopsmw-express-hello\n
+          npm install\n
+          forever start app.js"
+
+      #######################
+      ##  OPTIONAL PARAMS
+      #######################
+      #
+      #KeyName: my-key
+      #
+      # If you want to be able to SSH onto the server, you'll need to specify your own key.
+      # This is outside the scope of this demo. But if you're interested, uncomment the above "KeyName" param, and please refer to:
+      #  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-keyname
+      #  * https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html
