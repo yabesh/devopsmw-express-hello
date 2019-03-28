@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+echo 'Starting node back up...'
+forever start --uid "devopsdemo" -a /var/www/nodejs/devopsmw-express-hello/app.js
