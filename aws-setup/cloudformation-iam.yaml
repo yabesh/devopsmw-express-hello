@@ -1,0 +1,49 @@
+Resources:
+  CodeDeploySerivceRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: DevopsMWDemoCodeDeployServiceRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
+
+  CodeDeployEC2Role:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: DevopsMWDemoEC2Role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "root"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action:
+                  - "s3:Get*"
+                  - "s3:List*"
+                Resource:
+                  - "arn:aws:s3:::codepipeline-us-east-*"
+                  - "arn:aws:s3:::codepipeline-us-west-*"
+
+  CodeDeployEC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Roles:
+        - Ref: "CodeDeployEC2Role"
+      InstanceProfileName: DevopsMWDemoInstanceProfile
