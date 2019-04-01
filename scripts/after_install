@@ -1,9 +1,0 @@
-#!/bin/bash -xe
-
-echo 'Starting deployment...'
-
-# install packages
-cd /var/www/nodejs/devopsmw-express-hello
-npm install
-
-echo 'Deploy complete!'
