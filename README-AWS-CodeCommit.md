@@ -244,7 +244,7 @@ Once again, open the CodePipeline service within the AWS Console.
   4. Click the "+ Add action group" button
      1. Give the action a name (i.e. "QA Approval")
      2. Select "Manual approval" for the action provider
-     3. Leave the following fields empty for the "Configure the approval request" section. This step of setting up notifications may actually be quite useful but is left to the reader to do outside of the demo.  For assistance on that, read the [SNS Documentation](https://docs.aws.amazon.com/sns/latest/api/API_CreateTopic.html).
+     3. Leave the following fields empty for the "Configure the approval request" section. This step of setting up notifications may actually be quite useful but is left to the reader to do outside of the demo.  For assistance on that, read the [SNS Create Topic](https://docs.aws.amazon.com/sns/latest/api/API_CreateTopic.html) and [Manage Approval](https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals.html) documentation.
      4. Click the "Save" button
 
 At this point, the pipeline will wait for manual approval before proceeding to the next step, which will be deploying to production.  Let's add the production deployment step while we're still here before saving the pipeline changes.
@@ -265,9 +265,55 @@ At this point, the pipeline will wait for manual approval before proceeding to t
 
 
 
-Resources
-----------
+Appendix
+---------
 
+
+### AWS Cleanup ###
+
+  1. Services > CodePipeline
+     1. Select your pipeline
+     2. Click the "Delete pipeline" button
+     3. Confirm
+  2. Services > CodeBuild
+     1. Select your build project
+     2. Click the "Delete" button
+     3. Confirm
+  3. Services > CloudFormation
+     1. Select the 2nd stack you created that set up the QA & Prod servers
+     2. Choose Actions > Delete stack
+     3. Confirm
+     4. Once complete, select the 1st stack you created that set up permissions and roles
+     5. Choose Actions > Delete stack
+  4. Services > S3
+     1. In the "Search for buckets" field, type "pipeline"
+        **IF** you aren't already using CodePipeline for something else, this is the bucket that CodePipeline created for this demo project, and it is safe to delete it.  It is up to you to ensure your demo code is the only thing in there before deleting the bucket and all of its contents.
+     2. Click the checkbox next to the pipeline bucket you wish to delete and click the "Delete" button
+     3. Confirm
+  5. Services > CloudWatch > Logs
+     1. Find the log group for "/aws/codebuild/<YOUR_CODE_BUILD_NAME>"
+     2. Click the circle selector (radio button) for that row and click Actions > Delete log group
+     3. Confirm
+  6. Services > IAM
+     1. Roles
+        1. Search for roles beginning with your initials that were created for purposes of this demo
+        2. Click the checkbox next to each of those roles
+        3. Click the "Delete role" button
+        4. Confirm
+     2. Policies
+        1. Search for policies containing your initials that were created for purposes of this demo (i.e. AWSCodePipelineServiceRole)
+        2. Click the radio button for the role
+        3. Policy actions > Delete
+        4. Confirm
+  7. Services > CodeCommit
+     1. Click the radio button for the repository
+     2. Click the "Delete repository" button
+     3. Confirm
+
+
+### Resources ###
+
+[Notification on Failed Builds](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html)
 [AWS Pipeline Walkthrough](https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-simple-codecommit.html)
 [CodeDeploy for On-premise Servers](https://docs.aws.amazon.com/codedeploy/latest/userguide/instances-on-premises.html)
 [On-premise Deploy Walkthrough](https://docs.aws.amazon.com/codedeploy/latest/userguide/tutorials-on-premises-instance.html)
