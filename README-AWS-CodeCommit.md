@@ -9,19 +9,36 @@ Git the Code!
 
 The base code can be found at https://github.com/sketchdev/devopsmw-express-hello.
 
-There are two suggested ways of copying this code and using it on your own.  You can either 1) use GitHub and fork the repository, or you can 2) use AWS Code Commit to clone the code into.  This demo will proceed using GitHub.  If you are interested in the Code Commit option, see the README-AWS-CodeCommit.md document for instructions on that path.
+*NOTE:* This demo assumes that you either 1) already have access to run `git` commands against CodeCommit, or 2) you have access to the IAM console within AWS to modify your AWS user account by following [these AWS instructions](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np).  If neither of these are true, it would be best for you to use the following GitHub process instead.
 
 #### Using GitHub ####
-If you want to use GitHub instead of AWS Code Commit, you may.  Just fork the repo link to your own GitHub account.  See [GitHub's instructions](https://help.github.com/en/articles/fork-a-repo#fork-an-example-repository) on how to fork a repo.
+If you want to use GitHub instead of AWS CodeCommit, you may.  Just fork the repo link to your own GitHub account.  This demo focuses on CodeCommit, though, so your instructions may vary slightly during the setup of the build pipeline.  Skip to the next section if you are using GitHub.
 
-Once the code is forked to your own GitHub repository, clone the code to your local workstation.
+#### Using CodeCommit ####
 
+##### Create the CodeCommit Repo #####
+To git the code into CodeCommit for you to modify and use in the demo, you'll first need to be logged in to the AWS Console.  From there, go to the CodeCommit service, and make sure you're in the Repositories menu on the left-nav.
+
+  1. Click the "Create repository" button
+  2. Give the repository a name
+  3. Click the "Create" button
+
+##### Copy the Code from GitHub into CodeCommit #####
 ```shell
-git clone https://github.com/<YOUR_USERNAME>/devopsmw-express-hello.git
+git clone --mirror https://github.com/sketchdev/devopsmw-express-hello.git devopsdemotemp
+cd devopsdemotemp
+git push https://git-codecommit.[AWS_REGION].amazonaws.com/v1/repos/[YOUR_REPO_NAME] --all
 ```
 
-#### Using AWS Code Commit ###
-This demo focuses on saving your code in and running the pipeline against GitHub.  If you are reading this README yet using Code Commit, your instructions may vary slightly during the setup of the build pipeline.  Please refere to README-AWS-CodeCommit.md in this project instead.
+If you are prompted for username and password at this point, please refer to [these AWS instructions](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np).
+
+```shell
+cd ..
+rm -Rf devopsdemotemp
+git clone https://git-codecommit.[AWS_REGION].amazonaws.com/v1/repos/[YOUR_REPO_NAME]
+cd [YOUR_REPO_NAME]
+git checkout master
+```
 
 
 Quick Tangent - Some Pre-Game Setup
@@ -59,13 +76,8 @@ Within the AWS Console, navigate to the CodeBuild service to view and configure 
   2. Set up Project Configuration
      1. Give the build step a name
   3. Set up Source
-     1. Select GitHub as the provider
-     2. Choose your Repository
-        1. Leave the "Connect using OAuth" selected
-        2. Click the "Connect to GitHub" button
-        3. A new window pops open. Sign in to GitHub using your GitHub credentials
-        4. Once successfully authenticated, you will be taken back to the CodeBuild Setup screen.
-        5. Provide your forked repository URL
+     1. Select AWS CodeCommit as the provider
+     2. Select the repository that you created in CodeCommit in the previous section
   4. Set up Environment
      1. Use a Managed image
      2. Select Ubuntu as the Operating system
@@ -153,15 +165,12 @@ Ah, the glue that binds committing code changes to deployments.  That's what we'
 
 ### Tie Source Code to the Pipeline ###
 
-This is the step where you tell CodePipeline where to get the application source code from.  In our case, we need to specify GitHub as the provider.  The wizard is pretty good at getting the pipeline authenticated with GitHub, so begin by clicking the "Connect to GitHub" button.
+This is the step where you tell CodePipeline where to get the application source code from.  If you forked the repo to your own GitHub account, you will specify GitHub as the provider.  The wizard is pretty good at getting the pipeline authenticated with GitHub, but that's outside the scope of this demo.  Since we already went through the trouble of setting up CodeCommit, we'll use that instead.
 
-  1. After clicking the "Connect to GitHub" button, a new window will pop open
-     1. You should still be logged in / authorized, so all that's left is to confirm permissions being granted by GitHub to AWS Code Pipeline
-     2. Approve by clicking "Authorize aws-codesuite"
-     3. You should be returned back to the pipeline setup page
-  2. Select the repository you forked at the beginning of this demo
+  1. Select "AWS CodeCommit" for the Source provider
+  2. Select your repo that you created at the beginning of this demo
   3. Select the "master" branch
-  4. Leave the "GitHub webhooks" option selected
+  4. Leave "detection options" set at "Amazon CloudWatch Events"; this acts like webhooks that triggers the pipeline whenever a code commit happens
   5. Click "Next"
 
 ### Build Stage ###
@@ -233,9 +242,9 @@ Once again, open the CodePipeline service within the AWS Console.
      1. Give the stage a name (i.e. "Approval")
      2. Click "Add stage"
   4. Click the "+ Add action group" button
-     1. Give the action a name (i.e. "UAT-Approval")
+     1. Give the action a name (i.e. "QA Approval")
      2. Select "Manual approval" for the action provider
-     3. Leave the following fields empty for the "Configure the approval request" section. This step of setting up notifications may actually be quite useful but is left to the reader to do outside of the demo.  For assistance on that, read the [SNS Create Topic](https://docs.aws.amazon.com/sns/latest/api/API_CreateTopic.html) and [Manage Approval](https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals.html) documentation.
+     3. Leave the following fields empty for the "Configure the approval request" section. This step of setting up notifications may actually be quite useful but is left to the reader to do outside of the demo.  For assistance on that, read the [SNS Documentation](https://docs.aws.amazon.com/sns/latest/api/API_CreateTopic.html).
      4. Click the "Save" button
 
 At this point, the pipeline will wait for manual approval before proceeding to the next step, which will be deploying to production.  Let's add the production deployment step while we're still here before saving the pipeline changes.
@@ -259,7 +268,6 @@ At this point, the pipeline will wait for manual approval before proceeding to t
 Resources
 ----------
 
-[Notification on Failed Builds](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html)
 [AWS Pipeline Walkthrough](https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-simple-codecommit.html)
 [CodeDeploy for On-premise Servers](https://docs.aws.amazon.com/codedeploy/latest/userguide/instances-on-premises.html)
 [On-premise Deploy Walkthrough](https://docs.aws.amazon.com/codedeploy/latest/userguide/tutorials-on-premises-instance.html)

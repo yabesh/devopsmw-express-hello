@@ -1,4 +1,5 @@
 Resources:
+  ### This role is used by the CodeDeploy Deployment Group so it can access the necessary AWS APIs for pinpointing which servers to deploy to
   CodeDeploySerivceRole:
     Type: AWS::IAM::Role
     Properties: 
@@ -15,6 +16,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
 
+  ### This role is used by the QA & Prod EC2 instances in cloudformation-environment.yaml so that they're able to access the code bundles to be deployed
   CodeDeployEC2Role:
     Type: AWS::IAM::Role
     Properties: 
@@ -41,6 +43,7 @@ Resources:
                   - "arn:aws:s3:::codepipeline-us-east-*"
                   - "arn:aws:s3:::codepipeline-us-west-*"
 
+  ### This is an "add-on" to the role above for the QA & Prod servers to be able to bind the permissions
   CodeDeployEC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: 
