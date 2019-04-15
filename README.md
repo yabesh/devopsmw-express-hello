@@ -2,30 +2,6 @@ Agility Through Continuous Delivery
 ====================================
 
 
-Initial Setup
---------------
-
-There are two AWS CloudFormation templates included with this code.  One sets up two servers to run the application -- one QA server, and one Production server.  The other template sets up permissions for these servers to be able to download the code bundle being deployed.  Because CloudFormation is outside the scope of this demo, we will not dive into the details of what all is happening.  But, because this minimal setup is required to be in place before proceeding with this DevOps demo, we'll keep the launching of these two templates to a minimum.
-
-From the AWS Console, navigate to the CloudFormation service and then:
-
-  1. Click the "Create Stack" button
-  2. Choose upload template
-  3. Click the upload button
-  4. Browse to the aws-setup folder within this code project
-     1. The first time through launching the templates, select the cloudformation-iam.yaml template
-     2. The 2nd time through, select the cloudformation-environment.yaml template
-  5. Click "Next"
-  6. Name the stack
-     1. The first time through, name it "DevopsDemoIam"
-     2. The 2nd time through, name it "DevopsDemoEnv"
-  7. Click "Next"
-  8. Click "Next"
-  9. Click "Create stack"
-     **NOTE:** for the "-iam.yaml" template, you'll first need to check the "I acknowledge that AWS CloudFormation might create IAM resources with custom names" box
-  10. Repeat the above steps for the 2nd template
-
-
 Git the Code!
 --------------
 
@@ -63,6 +39,30 @@ git clone https://git-codecommit.[AWS_REGION].amazonaws.com/v1/repos/[YOUR_REPO_
 cd [YOUR_REPO_NAME]
 git checkout master
 ```
+
+
+Quick Tangent - Some Pre-Game Setup
+------------------------------------
+
+There are two AWS CloudFormation templates included with this code.  One sets up two servers to run the application -- one QA server, and one Production server.  The other template sets up permissions for these servers to be able to download the code bundle being deployed.  Because CloudFormation is outside the scope of this demo, we will not dive into the details of what all is happening.  But, because this minimal setup is required to be in place before proceeding with this DevOps demo, we'll keep the launching of these two templates to a minimum.
+
+From the AWS Console, navigate to the CloudFormation service and then:
+
+  1. Click the "Create Stack" button
+  2. Choose upload template
+  3. Click the upload button
+  4. Browse to the aws-setup folder within this code project
+     1. The first time through launching the templates, select the cloudformation-iam.yaml template
+     2. The 2nd time through, select the cloudformation-environment.yaml template
+  5. Click "Next"
+  6. Name the stack
+     1. The first time through, name it "DevopsDemoIam"
+     2. The 2nd time through, name it "DevopsDemoEnv"
+  7. Click "Next"
+  8. Click "Next"
+  9. Click "Create stack"
+     **NOTE:** for the "-iam.yaml" template, you'll first need to check the "I acknowledge that AWS CloudFormation might create IAM resources with custom names" box
+  10. Repeat the above steps for the 2nd template
 
 
 CodeBuild Setup
