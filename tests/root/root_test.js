@@ -11,7 +11,7 @@ describe('root_hello_world', async () => {
         await request(app).get('/')
             .expect((res) => {
                 res.status.should.equal(200);
-                res.text.should.equal('Hello DevOps Midwest! 2019!!');
+                res.text.should.equal('Thanks for watching!');
             });
     });
 });
