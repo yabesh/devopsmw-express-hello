@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/nodejs/devopsmw-express-hello/
+hooks:
+  ApplicationStart:
+    - location: scripts/application_start
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/application_stop
+      timeout: 300
+      runas: root

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+forever list
+forever list | grep devopsdemo > /dev/null
+result=$?
+
+if [ "$result" == "0" ]; then
+  echo 'Stopping node...'
+  forever stop devopsdemo
+fi
+
